@@ -1,0 +1,30 @@
+ninja_required_version = 1.3
+cxx = c++
+nvcc = /usr/local/cuda/bin/nvcc
+
+cflags = -DTORCH_EXTENSION_NAME=kernels -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\"_gcc\" -DPYBIND11_STDLIB=\"_libstdcpp\" -DPYBIND11_BUILD_ABI=\"_cxxabi1011\" -isystem /root/miniconda3/envs/torch1.8/lib/python3.8/site-packages/torch/include -isystem /root/miniconda3/envs/torch1.8/lib/python3.8/site-packages/torch/include/torch/csrc/api/include -isystem /root/miniconda3/envs/torch1.8/lib/python3.8/site-packages/torch/include/TH -isystem /root/miniconda3/envs/torch1.8/lib/python3.8/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /root/miniconda3/envs/torch1.8/include/python3.8 -D_GLIBCXX_USE_CXX11_ABI=0 -fPIC -std=c++14
+post_cflags = 
+cuda_cflags = -DTORCH_EXTENSION_NAME=kernels -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\"_gcc\" -DPYBIND11_STDLIB=\"_libstdcpp\" -DPYBIND11_BUILD_ABI=\"_cxxabi1011\" -isystem /root/miniconda3/envs/torch1.8/lib/python3.8/site-packages/torch/include -isystem /root/miniconda3/envs/torch1.8/lib/python3.8/site-packages/torch/include/torch/csrc/api/include -isystem /root/miniconda3/envs/torch1.8/lib/python3.8/site-packages/torch/include/TH -isystem /root/miniconda3/envs/torch1.8/lib/python3.8/site-packages/torch/include/THC -isystem /usr/local/cuda/include -isystem /root/miniconda3/envs/torch1.8/include/python3.8 -D_GLIBCXX_USE_CXX11_ABI=0 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_86,code=compute_86 -gencode=arch=compute_86,code=sm_86 --compiler-options '-fPIC' -std=c++14
+cuda_post_cflags = 
+ldflags = -shared -lcusparse -L/root/miniconda3/envs/torch1.8/lib/python3.8/site-packages/torch/lib -lc10 -lc10_cuda -ltorch_cpu -ltorch_cuda_cu -ltorch_cuda_cpp -ltorch -ltorch_python -L/usr/local/cuda/lib64 -lcudart
+
+rule compile
+  command = $cxx -MMD -MF $out.d $cflags -c $in -o $out $post_cflags
+  depfile = $out.d
+  deps = gcc
+
+rule cuda_compile
+  depfile = $out.d
+  deps = gcc
+  command = $nvcc --generate-dependencies-with-compile --dependency-output $out.d $cuda_cflags -c $in -o $out $cuda_post_cflags
+
+rule link
+  command = $cxx $in $ldflags -o $out
+
+build custom.o: compile /root/gnn_wkspace/gb/kernels/csrc/custom.cpp
+build custom_kernel.cuda.o: cuda_compile /root/gnn_wkspace/gb/kernels/csrc/custom_kernel.cu
+
+build kernels.so: link custom.o custom_kernel.cuda.o
+
+default kernels.so
+

@@ -1,0 +1,7 @@
+# ninja log v5
+1	11014	1683983069	custom.o	a5aed4dea3e7c3ef
+0	31753	1683983121	custom_kernel.cuda.o	ae34638dcda9662b
+31757	32077	1683983121	kernels.so	4426acadead7d56a
+2	9686	1683984344	custom.o	a5aed4dea3e7c3ef
+3	30413	1683984364	custom_kernel.cuda.o	ae34638dcda9662b
+30413	30731	1683984365	kernels.so	4426acadead7d56a
