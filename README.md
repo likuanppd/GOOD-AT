@@ -61,6 +61,9 @@ The hyper-parameters are well set in good.py and goodat_unit_test.py, and we do 
 - **ptb_d = 0.3:** the perturbation rate for training the detector
 - **threshold = 0.1:** the threshold of detecting adversarial edges
 
+## Self-training-based Poisoning defense
+For the self-training defense, please refer to our another repository: https://github.com/likuanppd/STRG
+
 ## Citation
 ```
 @inproceedings{li2023boosting,
@@ -70,9 +73,6 @@ The hyper-parameters are well set in good.py and goodat_unit_test.py, and we do 
   year={2023}
 }
 ```
-
-## Self-training-based Poisoning defense
-For the self-training defense, please refer to our another repository: https://github.com/likuanppd/STRG
 
 ## Contact
 
